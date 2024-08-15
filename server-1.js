@@ -5,17 +5,20 @@ const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
 
+// this buffers the whole file in memory which is not good for large files.
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
+// pull info from query params
 app.get("/urlencoded-form", (req, res) => {
   console.log(req.query);
   res.redirect("/");
 });
 
+// pull info from urlencoded body
 app.post("/urlencoded-form", (req, res) => {
   console.log(req.headers.origin);
   console.log(req.body);
@@ -25,6 +28,7 @@ app.post("/urlencoded-form", (req, res) => {
   );
 });
 
+// pull data from multipart form, separating into file and body using multer. Then process with sharp.
 app.post("/multipart-form", upload.single("photo"), async (req, res) => {
   if (!req.file) {
     res.status(400).send("You have to include a photo!");
