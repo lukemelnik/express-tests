@@ -8,6 +8,7 @@ const session = require("express-session");
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
+// using express-session here. note that you could also use cookie-session but it's less secure because all session data is stored in the cookie.
 app.use(
   session({
     // by default the sessions are stored in memory i.e RAM, you would swap this out to use a database like Redis. Note that this middleware will automatically query the database for matching sessions and append the data to the request object.
@@ -21,7 +22,7 @@ app.use(
 );
 
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
+  res.sendFile(path.join(__dirname, "views", "login.html"));
 });
 
 app.post("/login", (req, res) => {
@@ -43,10 +44,10 @@ app.post("/login", (req, res) => {
 app.get("/multipart-form", (req, res) => {
   // this allows all users at this point. could restrict it by doing if (!req.session.authorized) { return res.status(301).redirect("/login"); } but I wanted to test authorization on upload.
   console.log(req.session);
-  if (!req.session) {
+  if (!req.session.authorized) {
     return res.status(301).redirect("/login");
   } else {
-    return res.sendFile(path.join(__dirname, "public", "multipart-form.html"));
+    return res.sendFile(path.join(__dirname, "views", "multipart-form.html"));
   }
 });
 
